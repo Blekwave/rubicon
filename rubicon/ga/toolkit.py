@@ -14,5 +14,6 @@ class Toolkit:
     def fitness(self, ind):
         raise NotImplementedError
 
+    @staticmethod
     def map(*args, **kwargs):
         return map(*args, **kwargs)

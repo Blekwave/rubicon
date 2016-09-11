@@ -1,12 +1,17 @@
 import random
-
 from functools import partial
-
-from ga import Toolkit
 
 import rubikscube as rc
 import ga.operators as ops
-from graph_fitness import graph_fitness
+
+from ga import Toolkit
+from graph_fitness import solution_distance
+from cube_fitness import wrong_color_facelets, wrong_cubelets
+
+
+def combined_fitness(ind, initial_cube):
+    cube = rc.apply_moves(initial_cube, ind)
+    return wrong_cubelets(cube)
 
 
 def create_ind(min_size, max_size):
@@ -92,7 +97,7 @@ class RubiconToolkit(Toolkit):
         initial_cube = rc.from_file(config['Rubiks']['InitialPath'],
                                     flatten=True)
         self.initial_cube = initial_cube
-        fitness = partial(graph_fitness, initial_cube=initial_cube)
+        fitness = partial(combined_fitness, initial_cube=initial_cube)
         self.fitness = fitness
 
     def init_pop(self):

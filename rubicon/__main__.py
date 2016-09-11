@@ -1,34 +1,30 @@
+import math
 import datetime
 import time
 import os
+import pprint
+import multiprocessing as mp
 from collections import namedtuple
 
+import numpy as np
+
 import rubikscube as rc
-from ga import run_ga
+from ga import run_ga, summarize_stats
 from rubicon_toolkit import RubiconToolkit
-from log_tools import log_run, log_individuals
+from log_tools import log_run, log_multi_run, log_individuals
 
 THIS_FILE = os.path.realpath(__file__)
 RUNS_DIR = os.path.join(os.path.dirname(THIS_FILE), "../runs")
 
-
-def make_run_dir(timestr, label):
-    dir_name = os.path.join(RUNS_DIR, "{}-runs".format(timestr))
-    if label:
-        dir_name = os.path.join(dir_name, label)
-    if not os.path.exists(dir_name):
-        os.makedirs(dir_name)
-    return dir_name
-
-config = {
+CONFIG = {
     'GA': {
         'InitMinSize': 5,
         'InitMaxSize': 15,
         'MutMinSize': 1,
         'MutMaxSize': 10,
         'IndMaxSize': 100,
-        'PopSize': 200,
-        'Gens': 500,
+        'PopSize': 100,
+        'Gens': 100,
         'TournSize': 3,
         'NumElitism': 1,
         'CxProb': 0.8,
@@ -36,41 +32,83 @@ config = {
     },
     'Rubiks': {
         'InitialPath': 'inputs/in1/in1'
-    }
+    },
+    'Runs': 3
 }
 
-Timestamps = namedtuple("Timestamps", ["start", "duration"])
 
+def single_run(toolkit, run_dir):
+    config = toolkit.config
 
-def main(run_label=None):
-    """Runs an instance of the genetic algorithm for solving a cube.
+    if not os.path.exists(run_dir):
+        os.makedirs(run_dir)
 
-    Parameters:
-    - run: labels this specific run. Should be used when running many
-           instances in parallel, in order to avoid folder name
-           conflict."""
-
-    toolkit = RubiconToolkit(config)
-
-    start_timestr = datetime.datetime.now().strftime("%Y%m%d-%Hh%Mm%Ss")
     start_time = time.time()
 
     pop = toolkit.init_pop()
     best, pop, stats = run_ga(pop, config['GA']['Gens'], toolkit)
+    best_fitness = toolkit.fitness(best)
 
     end_time = time.time()
     duration = end_time - start_time  # in seconds
 
-    print(best)
+    pprint.pprint(best, indent=4, compact=True)
+    print("Fitness:", best_fitness)
     best_final_cube = rc.apply_moves(toolkit.initial_cube, best)
     rc.print_3d_cube(best_final_cube)
 
-    run_dir = make_run_dir(start_timestr, run_label)
-    timestamps = Timestamps(start=start_timestr, duration=duration)
-
-    log_run(run_dir, config, stats, timestamps)
+    log_run(run_dir, config, stats, duration)
     log_individuals(run_dir, best, pop, best_final_cube)
+
+    return (best_fitness, best), pop, stats
+
+
+def multi_run(toolkit, all_runs_dir):
+    config = toolkit.config
+
+    fitness_and_best = []
+    run_stats = []
+
+    start_time = time.time()
+
+    for run in range(config['Runs']):
+        digits = int(math.log(config['Runs'], 10)) + 1
+        run_id = str(run).zfill(digits)
+        run_dir = os.path.join(all_runs_dir, "run_{}".format(run_id))
+        run_fitness_and_best, _, stats = single_run(toolkit, run_dir)
+        fitness_and_best.append(run_fitness_and_best)
+        run_stats.append(stats)
+
+    fitness, best = min(fitness_and_best)
+    print('Best:', best)
+    print('Fitness:', fitness)
+    best_final_cube = rc.apply_moves(toolkit.initial_cube, best)
+    rc.print_3d_cube(best_final_cube)
+
+    end_time = time.time()
+    duration = end_time - start_time  # in seconds
+
+    summary = summarize_stats(run_stats)
+    _, best_inds = zip(*fitness_and_best)
+
+    log_multi_run(all_runs_dir, config, summary, duration)
+    log_individuals(all_runs_dir, best, best_inds, best_final_cube)
+
+
+def main(pool=None):
+    config = CONFIG
+    toolkit = RubiconToolkit(config)
+    if pool:
+        toolkit.map = pool.map
+
+    timestr = datetime.datetime.now().strftime("%Y%m%d-%Hh%Mm%Ss")
+    all_runs_dir = os.path.join(RUNS_DIR, "{}-runs".format(timestr))
+    if config['Runs'] == 1:
+        single_run(toolkit, all_runs_dir)
+    elif config['Runs'] > 1:
+        multi_run(toolkit, all_runs_dir)
 
 
 if __name__ == '__main__':
-    main()
+    pool = mp.Pool()
+    main(pool=pool)
