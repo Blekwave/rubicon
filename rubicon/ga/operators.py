@@ -1,6 +1,8 @@
 import random
 import heapq
 
+from functools import wraps
+
 
 def sel_tourn(fit_and_pop, num_offspring, k):
     """Select offspring from a population via tournament selection.
@@ -83,6 +85,7 @@ def size_limit(operator, limit):
     - limit: maximum individual size
 
     Returns the decorated operator."""
+    @wraps(operator)
     def limited_function(*input_inds):
         output_inds = operator(*input_inds)
         for ind in output_inds:

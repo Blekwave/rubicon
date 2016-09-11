@@ -18,13 +18,6 @@ are the clockwise rotation of each of the six faces. Other moves
 often used can be made from these basic moves: counter-clockwise
 rotation, 180-degree rotation, rotation of the middle row of a face
 etc.
-
-This representation also maintains an adjacency map which maps faces
-to other faces which are adjacent, in clockwise order. This map is
-stored as a simple 6-long vector of 4-long integer vectors, which is
-indexed by face and side of adjacency. For example, adj[3][0] and
-adj[3][2] refer to the sides which are to the top and bottom of side
-#3.
 """
 
 FACES = 6
@@ -114,25 +107,6 @@ def adjacent_faces():
     ])
 
 
-def adjacency_sides():
-    """Generates a list lists of adjacency sides.
-
-    Given a face A and a side S of that face, to which face B is
-    adjacent to face A, the adjacency side of face A's side S is the
-    side of B which is adjacent to A.
-
-    The list of lists is indexed by face. The lists of adjacency sides
-    are indexed by side of the face clockwise.
-    """
-    adj_faces = adjacent_faces()
-    adj_sides = np.zeros((FACES, SQR_SIDES), dtype=int)
-    for face_a in range(FACES):
-        for a_to_b, face_b in enumerate(adj_faces[face_a]):
-            b_to_a = list(adj_faces[face_b]).index(face_a)
-            adj_sides[face_b][b_to_a] = a_to_b
-    return adj_sides
-
-
 def adjacent_vector_indices():
     # Faces
     up = 0
@@ -183,10 +157,6 @@ def adjacent_vector_indices():
             (left, 2, pos)
         ]
     ]
-
-
-ADJACENT = adjacent_faces()
-ADJACENCY = adjacency_sides()
 
 
 CORNERS = [

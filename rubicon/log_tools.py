@@ -6,6 +6,7 @@ import pickle
 from collections import namedtuple
 from functools import partial
 
+import matplotlib as mpl
 import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd
@@ -26,15 +27,19 @@ def print_run_stats(stats, file=sys.stdout):
 
 
 def plot_records(path, records, multi=False):
+    fontsize = 'large'
+    mpl.rc('axes', labelsize=fontsize)
+    mpl.rc('xtick', labelsize=fontsize)
+    mpl.rc('ytick', labelsize=fontsize)
+    sns.set_style("white")
+    plt.plot(range(len(records)), records)
     if multi:
-        columns = ["min", "max", "mean", "std"]
-        f = pd.DataFrame.from_records(records, columns=columns)
-        f.plot()
-    else:
-        plt.plot(range(len(records)), records)
+        legend = plt.legend(['min', 'max', 'mean', 'std'], loc='upper right',
+                            frameon=True, fontsize=fontsize, framealpha=0.5)
+        legend.get_frame().set_facecolor('#FFFFFF')
+    plt.xlabel('Generation')
     plt.savefig(path)
     plt.clf()
-
 
 
 def log_stats(stats, run_dir, file=sys.stdout):
@@ -45,7 +50,6 @@ def log_stats(stats, run_dir, file=sys.stdout):
         filename = "{}.pdf".format(stat_name)
         path = os.path.join(run_dir, filename)
         plot_records(path, records, multi=stat_name in multi_stats)
-
 
 
 def log_run(run_dir, config, stats, duration):

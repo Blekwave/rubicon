@@ -26,7 +26,7 @@ def count_improved(prev_fitnesses, fitnesses):
     return sum(fitnesses < prev_fitnesses)
 
 
-def run_ga(pop, generations, toolkit):
+def run_ga(pop, generations, toolkit, verbose=True):
     """Runs a genetic algorithm.
 
     Parameters:
@@ -34,7 +34,7 @@ def run_ga(pop, generations, toolkit):
     - generations: number of generations the GA should run for
     - toolkit: ga.Toolkit which implements select, best, vary operators
                and a fitness function."""
-    fitnesses = np.array(toolkit.map(toolkit.fitness, pop))
+    fitnesses = np.array(list(toolkit.map(toolkit.fitness, pop)))
     stats = {key: list() for key in ("fitness", "size", "improved", "same")}
 
     for gen in range(generations):
@@ -49,7 +49,7 @@ def run_ga(pop, generations, toolkit):
         pop = offspring + list(best)
 
         prev_fitnesses = fitnesses
-        fitnesses = np.array(toolkit.map(toolkit.fitness, pop))
+        fitnesses = np.array(list(toolkit.map(toolkit.fitness, pop)))
         sizes = [len(ind) for ind in pop]
 
 
@@ -58,15 +58,15 @@ def run_ga(pop, generations, toolkit):
         same = count_repeated(pop)
         improved = count_improved(prev_fitnesses, fitnesses)
 
-
         log_fmt = "{}\tMin: {}, Avg: {}, Avg size: {}, Same: {}, Improved: {}"
-        print(log_fmt.format(gen, fit_stats.min, fit_stats.mean,
-                             size_stats.mean, same, improved))
+        if verbose:
+            print(log_fmt.format(gen, fit_stats.min, fit_stats.mean,
+                                 size_stats.mean, same, improved))
+
         stats['fitness'].append(fit_stats)
         stats['size'].append(size_stats)
         stats['same'].append(same)
         stats['improved'].append(improved)
-
 
     return best[0], pop, stats
 
@@ -84,7 +84,7 @@ def summarize_stats(run_stats):
         for gen_stats in zip(*stat_by_run):
             if stat_name in multi_stats:
                 mins, maxes, means, stds = zip(*gen_stats)
-                record = Record(min=min(mins), max=max(maxes),
+                record = Record(min=np.mean(mins), max=np.mean(maxes),
                                 mean=np.mean(means), std=np.mean(stds))
                 summary[stat_name].append(record)
             else:

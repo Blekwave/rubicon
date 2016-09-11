@@ -23,21 +23,21 @@ CONFIG = {
         'MutMinSize': 1,
         'MutMaxSize': 10,
         'IndMaxSize': 100,
-        'PopSize': 100,
+        'PopSize': 300,
         'Gens': 100,
         'TournSize': 3,
         'NumElitism': 1,
-        'CxProb': 0.8,
-        'MutProb': 0.35,
+        'CxProb': 0.9,
+        'MutProb': 0.1,
     },
     'Rubiks': {
         'InitialPath': 'inputs/in1/in1'
     },
-    'Runs': 3
+    'Runs': 30
 }
 
 
-def single_run(toolkit, run_dir):
+def single_run(toolkit, run_dir, verbose=True):
     config = toolkit.config
 
     if not os.path.exists(run_dir):
@@ -46,16 +46,17 @@ def single_run(toolkit, run_dir):
     start_time = time.time()
 
     pop = toolkit.init_pop()
-    best, pop, stats = run_ga(pop, config['GA']['Gens'], toolkit)
+    best, pop, stats = run_ga(pop, config['GA']['Gens'], toolkit, verbose)
     best_fitness = toolkit.fitness(best)
 
     end_time = time.time()
     duration = end_time - start_time  # in seconds
 
-    pprint.pprint(best, indent=4, compact=True)
-    print("Fitness:", best_fitness)
     best_final_cube = rc.apply_moves(toolkit.initial_cube, best)
-    rc.print_3d_cube(best_final_cube)
+    if verbose:
+        pprint.pprint(best, indent=4, compact=True)
+        print("Fitness:", best_fitness)
+        rc.print_3d_cube(best_final_cube)
 
     log_run(run_dir, config, stats, duration)
     log_individuals(run_dir, best, pop, best_final_cube)
@@ -75,7 +76,9 @@ def multi_run(toolkit, all_runs_dir):
         digits = int(math.log(config['Runs'], 10)) + 1
         run_id = str(run).zfill(digits)
         run_dir = os.path.join(all_runs_dir, "run_{}".format(run_id))
-        run_fitness_and_best, _, stats = single_run(toolkit, run_dir)
+        run_fitness_and_best, _, stats = single_run(toolkit, run_dir, verbose=True)
+        log_fmt = "Run {}: Fitness {}\nBest: {}"
+        print(log_fmt.format(run, *run_fitness_and_best))
         fitness_and_best.append(run_fitness_and_best)
         run_stats.append(stats)
 
@@ -103,6 +106,10 @@ def main(pool=None):
 
     timestr = datetime.datetime.now().strftime("%Y%m%d-%Hh%Mm%Ss")
     all_runs_dir = os.path.join(RUNS_DIR, "{}-runs".format(timestr))
+
+    print("Start of execution:", timestr)
+    print("{} runs".format(config['Runs']))
+
     if config['Runs'] == 1:
         single_run(toolkit, all_runs_dir)
     elif config['Runs'] > 1:
@@ -110,5 +117,4 @@ def main(pool=None):
 
 
 if __name__ == '__main__':
-    pool = mp.Pool()
-    main(pool=pool)
+    main(pool=mp.Pool())

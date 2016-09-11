@@ -6,28 +6,6 @@ from functools import partial
 import numpy as np
 
 
-def face_side_indices(side):
-    """Lists the 2D indices for each side in a face of a certain side.
-
-    The index tuples contained by the list can be used as indices for
-    a 3D cube's face in order to return the list of facelets in that
-    side of the face.
-
-    e.g.:
-    >>> a = np.array(range(9)).reshape((3,3))
-    >>> a[(slice(None), 2)]  # right side
-    array([2, 5, 8])
-
-    Parameters:
-    - side: side of the faces in the cube"""
-    return [
-        (0, slice(None)),  # up
-        (slice(None), side - 1),  # right
-        (side - 1, slice(None)),  # down
-        (slice(None), 0)  # left
-    ]
-
-
 def rotate(cube, face, k=1):
     """Rotate a Rubik's Cube's face clockwise.
 
