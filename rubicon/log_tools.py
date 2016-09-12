@@ -7,6 +7,7 @@ from collections import namedtuple
 from functools import partial
 
 import matplotlib as mpl
+mpl.use('Agg')
 import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd
