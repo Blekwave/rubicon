@@ -1,0 +1,21 @@
+{
+    "Name": "more_gens",
+    "GA": {
+        "InitMinSize": 10,
+        "InitMaxSize": 30,
+        "MutMinSize": 1,
+        "MutMaxSize": 10,
+        "IndMaxSize": 100,
+        "PopSize": 300,
+        "Gens": 7000,
+        "TournSize": 3,
+        "NumElitism": 1,
+        "CxProb": 0.9,
+        "MutProb": 0.1
+    },
+    "Rubiks": {
+        "InitialPath": "inputs/in1/in1"
+    },
+    "Runs": 30
+}
+
