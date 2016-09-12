@@ -1,0 +1,21 @@
+{
+    "Name": "200inds",
+    "GA": {
+        "InitMinSize": 5,
+        "InitMaxSize": 15,
+        "MutMinSize": 1,
+        "MutMaxSize": 10,
+        "IndMaxSize": 100,
+        "PopSize": 200,
+        "Gens": 100,
+        "TournSize": 3,
+        "NumElitism": 1,
+        "CxProb": 0.9,
+        "MutProb": 0.1
+    },
+    "Rubiks": {
+        "InitialPath": "inputs/in1/in1"
+    },
+    "Runs": 30
+}
+
