@@ -13,9 +13,9 @@ from cube_fitness import wrong_color_facelets, wrong_cubelets
 def combined_fitness(ind, initial_cube):
     cube = rc.apply_moves(initial_cube, ind)
     return (wrong_cubelets(cube) +
-            wrong_color_facelets(cube) / 4 +
-            solution_distance(cube) / 8 +
-            math.log(len(ind)) / 4)
+            wrong_color_facelets(cube) / 2.4 +
+            solution_distance(cube) / 4.8 +
+            math.log(len(ind)) / 30)
 
 
 def create_ind(min_size, max_size):

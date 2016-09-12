@@ -68,7 +68,8 @@ def run_ga(pop, generations, toolkit, verbose=True):
         stats['same'].append(same)
         stats['improved'].append(improved)
 
-    return best[0], pop, stats
+    fit_and_pop = list(zip(fitnesses, pop))
+    return fit_and_pop, stats
 
 
 def group_by_key(list_of_maps):
@@ -77,6 +78,9 @@ def group_by_key(list_of_maps):
             for key in keys}
 
 
+SummaryRecord = namedtuple('SummaryRecord', ['min_mins', 'mean_mins', 'std_mins', 'mean_maxes',
+                                             'min_means', 'mean_means', 'std_means', 'mean_stds'])
+
 def summarize_stats(run_stats):
     summary = {key: list() for key in ('fitness', 'size', 'same', 'improved')}
     multi_stats = {'fitness', 'size'}
@@ -84,9 +88,20 @@ def summarize_stats(run_stats):
         for gen_stats in zip(*stat_by_run):
             if stat_name in multi_stats:
                 mins, maxes, means, stds = zip(*gen_stats)
-                record = Record(min=np.mean(mins), max=np.mean(maxes),
-                                mean=np.mean(means), std=np.mean(stds))
-                summary[stat_name].append(record)
+                kwargs = {
+                    'min_mins': min(mins),
+                    'mean_mins': np.mean(mins),
+                    'std_mins': np.std(mins),
+                    'mean_maxes': np.mean(maxes),
+                    'min_means': min(means),
+                    'mean_means': np.mean(means),
+                    'std_means': np.std(means),
+                    'mean_stds': np.mean(stds)
+                }
+                summary_record = SummaryRecord(**kwargs)
+                summary[stat_name].append(summary_record)
             else:
-                summary[stat_name].append(np.mean(gen_stats))
+                record = Record(min=min(gen_stats), max=max(gen_stats),
+                                mean=np.mean(gen_stats), std=np.std(gen_stats))
+                summary[stat_name].append(record)
     return summary

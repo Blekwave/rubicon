@@ -42,7 +42,7 @@ def wrong_cubelets(cube):
     cube = cube.reshape(FACES, SIDE, SIDE)
     total = 0
     for index in piece_iter():
-        if not any(cube[index] == _perfect_cube[index]):
+        if not sorted(cube[index]) == sorted(_perfect_cube[index]):
             total += 1
     return total
 
