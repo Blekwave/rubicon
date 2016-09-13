@@ -4,6 +4,8 @@ Rubicon
 Evolutionary Rubik's Cube solver attempt, made as classwork for a Natural
 Computing course. Not yet publicly available.
 
+The documentation (in Portuguese) for this project is available at `doc/doc.pdf`.
+
 Usage
 -----
 
