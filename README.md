@@ -6,10 +6,21 @@ Computing course. Not yet publicly available.
 
 The documentation (in Portuguese) for this project is available at `doc/doc.pdf`.
 
+Requirements
+------------
+
+- Python 3.5 or higher
+- NumPy
+
+Optionally, for plotting stats:
+
+- Matplotlib
+- Seaborn
+
 Usage
 -----
 
-`python rubicon/ config/some_config.json`
+`python3 rubicon/ config/some_config.json`
 
 Downloading the experiments
 ---------------------------
