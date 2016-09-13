@@ -43,7 +43,12 @@ def run_ga(pop, generations, toolkit, verbose=True):
         best = toolkit.best(fit_and_pop)
 
         _, offspring = zip(*fit_and_offspring)
-        _, best = zip(*best)
+
+        if best:
+            _, best = zip(*best)
+        else:
+            best = tuple()
+
         offspring = toolkit.vary(offspring)
 
         pop = offspring + list(best)

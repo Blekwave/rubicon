@@ -1,15 +1,15 @@
 {
-    "Name": "more_inds",
+    "Name": "no_elitism",
     "GA": {
         "InitMinSize": 10,
         "InitMaxSize": 30,
         "MutMinSize": 1,
         "MutMaxSize": 10,
         "IndMaxSize": 100,
-        "PopSize": 300,
-        "Gens": 7000,
-        "TournSize": 3,
-        "NumElitism": 1,
+        "PopSize": 100,
+        "Gens": 800,
+        "TournSize": 5,
+        "NumElitism": 0,
         "CxProb": 0.9,
         "MutProb": 0.1
     },

@@ -6,13 +6,15 @@ import pickle
 from collections import namedtuple
 from functools import partial
 
-import matplotlib as mpl
-mpl.use('Agg')
-import matplotlib.pyplot as plt
-import seaborn as sns
-import pandas as pd
-
 import rubikscube as rc
+
+try:
+    from plotting import plot_graphs
+except ImportError:
+    print("Matplotlib is unavailable, plot_graphs will do nothing")
+    def plot_graphs(*args, **kwargs):
+        pass
+
 
 def print_run_stats(stats, file=sys.stdout, multi=False):
     record_fmt = "{min} to {max} (mean {mean}, std {std})"
@@ -37,36 +39,6 @@ def print_run_stats(stats, file=sys.stdout, multi=False):
         row = row_fmt.format(gen=i, fit=fit_str, size=size_str, same=same_str,
                              improved=improved_str)
         print(row, file=file)
-
-
-def plot_records(path, records):
-    fontsize = 'large'
-    mpl.rc('axes', labelsize=fontsize)
-    mpl.rc('xtick', labelsize=fontsize)
-    mpl.rc('ytick', labelsize=fontsize)
-    sns.set_style("white")
-    if isinstance(records[0], tuple):
-        fields = records[0]._fields
-        legend_handles = []
-        gens = len(records)
-        for values, field in zip(zip(*records), fields):
-            handle, = plt.plot(range(gens), values, label=field)
-            legend_handles.append(handle)
-        legend = plt.legend(handles=legend_handles, loc='upper right',
-                            frameon=True, fontsize=fontsize, framealpha=0.5)
-        legend.get_frame().set_facecolor('#FFFFFF')
-    else:
-        plt.plot(range(len(records)), records)
-    plt.xlabel('Generation')
-    plt.savefig(path)
-    plt.clf()
-
-
-def plot_graphs(stats, run_dir, file=sys.stdout):
-    for stat_name, records in stats.items():
-        filename = "{}.pdf".format(stat_name)
-        path = os.path.join(run_dir, filename)
-        plot_records(path, records)
 
 
 def log_run(run_dir, config, stats, duration):
