@@ -6,11 +6,25 @@ import rubikscube as rc
 Record = namedtuple('Record', ('min', 'max', 'mean', 'std'))
 
 def stats_record(entries):
+    """Create a stats Record from a list of entries of the stat.
+
+    Parameters:
+    - entries: list of entries to be evaluated.
+
+    Returns a record with the minimum, maximum, mean and standard
+    deviation values for the list of entries provided."""
     return Record(min=min(entries), max=max(entries),
                   mean=np.mean(entries), std=np.std(entries))
 
 
 def count_repeated(pop):
+    """Counts the number of repeated individuals in a population.
+
+    Parameters:
+    - pop: population of the GA
+
+    Returns the number of individuals for which there's an individual
+    in the population which is exactly the same."""
     repeated = [False] * len(pop)
     for i, ind in enumerate(pop):
         if repeated[i]:
@@ -23,6 +37,14 @@ def count_repeated(pop):
 
 
 def count_improved(prev_fitnesses, fitnesses):
+    """Counts the number of improvements in fitness from the previous
+    generation to the current one.
+
+    Parameters:
+    - prev_fitnesses: fitness values of the previous generation
+    - fitnesses: fitnesses of the current generation
+
+    Returns an integer value regarding how many fitnesses improved."""
     return sum(fitnesses < prev_fitnesses)
 
 
@@ -78,6 +100,15 @@ def run_ga(pop, generations, toolkit, verbose=True):
 
 
 def group_by_key(list_of_maps):
+    """Groups a list of maps onto a map of lists
+
+    Parameters:
+    - list_of_maps: list of map containers which have all the same
+                    set of keys.
+
+    Returns a map whose keys are the same as each element of the
+    original list, and whose elements are lists of the values for a
+    given key in all maps."""
     keys = list_of_maps[0].keys()
     return {key: [m[key] for m in list_of_maps]
             for key in keys}
@@ -87,6 +118,12 @@ SummaryRecord = namedtuple('SummaryRecord', ['min_mins', 'mean_mins', 'std_mins'
                                              'min_means', 'mean_means', 'std_means', 'mean_stds'])
 
 def summarize_stats(run_stats):
+    """Summarize a list of stats dictionary into a single dictionary.
+
+    Parameters:
+    - run_stats: list of stats for many runs of the GA
+
+    Returns a dictionary with summarized records."""
     summary = {key: list() for key in ('fitness', 'size', 'same', 'improved')}
     multi_stats = {'fitness', 'size'}
     for stat_name, stat_by_run in group_by_key(run_stats).items():

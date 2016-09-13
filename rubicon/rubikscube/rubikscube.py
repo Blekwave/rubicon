@@ -108,6 +108,11 @@ def adjacent_faces():
 
 
 def adjacent_vector_indices():
+    """List the indices to the vectors adjacent to each face in the
+    Rubik's Cube, in clockwise order.
+
+    Returns a list of lists of indiced for the adjacent vector rings
+    to each face, indexed by face first and direction second."""
     # Faces
     up = 0
     left = 1

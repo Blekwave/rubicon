@@ -20,6 +20,17 @@ RUNS_DIR = os.path.join(os.path.dirname(THIS_FILE), "../runs")
 
 
 def single_run(toolkit, run_dir, verbose=True):
+    """Perform a single run of the genetic algorithm.
+
+    Parameters:
+    - toolkit: Toolkit object containing the operators and the fitness
+               function, to be passed to the GA procedure.
+    - run_dir: directory to which the log data should be saved for
+               the run
+    - verbose: if False, nothing is printed to stdout.
+
+    Returns the best individual and its fitness, the entire population
+    after all generations and the execution stats."""
     config = toolkit.config
 
     if not os.path.exists(run_dir):
@@ -48,6 +59,14 @@ def single_run(toolkit, run_dir, verbose=True):
 
 
 def multi_run(toolkit, all_runs_dir):
+    """Performs a set of GA runs.
+
+    Parameters:
+    - toolkit: Toolkit object containing the operators and the fitness
+               function, to be passed to the GA procedure.
+    - all_runs_dir: directory to which the summarized log data for all
+                    runs should be saved.
+    """
     config = toolkit.config
 
     fit_and_best = []
@@ -81,6 +100,13 @@ def multi_run(toolkit, all_runs_dir):
 
 
 def main(pool=None):
+    """Main function for the program.
+
+    Interprets the first command line argument as the path to the
+    configuration JSON.
+
+    Parameters:
+    - pool: multiprocessing.Pool for parallelization."""
     config_path = sys.argv[1]
     with open(config_path) as f:
         config = json.load(f)

@@ -13,6 +13,12 @@ except ImportError as e:
 
 
 def plot_records(path, records):
+    """Plots a specific stat's records to a file.
+
+    Parameters:
+    - path: path to which the plot should be saved.
+    - records: list of records (named tuples or integers) to be
+               plotted."""
     fontsize = 'large'
     mpl.rc('axes', labelsize=fontsize)
     mpl.rc('xtick', labelsize=fontsize)
@@ -35,6 +41,12 @@ def plot_records(path, records):
 
 
 def plot_graphs(stats, run_dir, file=sys.stdout):
+    """Plots graphs for a stats dictionary.
+
+    Parameters:
+    - stats: stats dictionary
+    - run_dir: directory to which the graphs should be saved.
+    """
     for stat_name, records in stats.items():
         filename = "{}.pdf".format(stat_name)
         path = os.path.join(run_dir, filename)

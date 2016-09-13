@@ -11,6 +11,17 @@ from cube_fitness import wrong_color_facelets, wrong_cubelets
 
 
 def combined_fitness(ind, initial_cube):
+    """Evaluate an individual based on an initial cube
+
+    Combines four different fitness functions:
+    - The count of wrong cubelets (orientation doesn't matter)
+    - The count of facelets with the wrong color
+    - The graph solution distance of the evaluated cube
+    - The size of the individual
+
+    Applies different, hard-coded coefficients to each function.
+
+    Returns a fitness value."""
     cube = rc.apply_moves(initial_cube, ind)
     return (wrong_cubelets(cube) +
             wrong_color_facelets(cube) / 2.4 +
@@ -63,7 +74,23 @@ def mutate_replace(ind, min_size, max_size):
 
 
 class RubiconToolkit(Toolkit):
+    """Toolkit for the Rubik's Cube GA solver.
+
+    Utilizes relevant operators for the problem:
+    - create: random array of movements
+    - select: tournament with elitism
+    - vary: crossover, mutation and reproduction on independent
+            probabilities
+    - mate: single-point crossover
+    - mutate: random fragment replacement
+    - fitness: combined fitness described in combined_fitness's
+               docstring."""
     def __init__(self, config):
+        """Initialize the toolkit, binding the configuration to the
+        operators.
+
+        Parameters:
+        - config: configuration object with the execution parameters."""
         self.config = config
         c = config['GA']
 
@@ -105,4 +132,7 @@ class RubiconToolkit(Toolkit):
         self.fitness = fitness
 
     def init_pop(self):
+        """Initialize a new population of Rubik's Cube GA individuals.
+
+        Returns a list of individuals."""
         return super().init_pop(self.config['GA']['PopSize'])
